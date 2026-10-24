@@ -40,7 +40,8 @@ def main():
     meta = json.loads(e[mcmeta_name].decode('utf-8'))
     ov = meta.setdefault('overlays', {}).setdefault('entries', [])
     ov = [o for o in ov if o.get('directory') != 'flash_1_21_6_plus']
-    ov.append({'formats': {'min_inclusive': 63, 'max_inclusive': 83}, 'directory': 'flash_1_21_6_plus'})
+    # Та же форма записи, что у overlays ItemsAdder: клиент 1.21.9+ читает min_format/max_format
+    ov.append({'directory': 'flash_1_21_6_plus', 'formats': [63, 64], 'min_format': 63, 'max_format': 83})
     meta['overlays']['entries'] = ov
     e[mcmeta_name] = json.dumps(meta, ensure_ascii=False).encode('utf-8')
     for f in ('rendertype_text.vsh', 'rendertype_text.fsh'):
