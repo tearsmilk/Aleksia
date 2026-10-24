@@ -57,7 +57,8 @@ def main():
                 e['assets/minecraft/items/' + fn] = json.dumps({'model': extra}, ensure_ascii=False).encode('utf-8'); print('added', fn); continue
             for n in targets:
                 d = json.loads(e[n].decode('utf-8')); m = d.get('model', {})
-                if m.get('type') != 'minecraft:range_dispatch' or m.get('property') != extra.get('property'):
+                norm = lambda v: str(v).replace('minecraft:', '')
+                if norm(m.get('type')) != 'range_dispatch' or norm(m.get('property')) != norm(extra.get('property')):
                     print('skip (not a cmd range_dispatch):', n); continue
                 have = {x['threshold'] for x in m['entries']}
                 added = [x for x in extra['entries'] if x['threshold'] not in have]
