@@ -46,6 +46,23 @@ def main():
     e[mcmeta_name] = json.dumps(meta, ensure_ascii=False).encode('utf-8')
     for f in ('rendertype_text.vsh', 'rendertype_text.fsh'):
         e['flash_1_21_6_plus/assets/minecraft/shaders/core/' + f] = open(os.path.join(shdir, f), 'rb').read()
+    # Дополнительные item definitions (extra_items/<item>.json): вливаем записи во все копии items/<item>.json
+    extra_dir = os.path.join(os.path.dirname(shdir), 'extra_items')
+    if os.path.isdir(extra_dir):
+        for fn in os.listdir(extra_dir):
+            if not fn.endswith('.json'): continue
+            extra = json.load(open(os.path.join(extra_dir, fn), encoding='utf-8'))['model']
+            targets = [n for n in e if n.endswith('assets/minecraft/items/' + fn)]
+            if not targets:
+                e['assets/minecraft/items/' + fn] = json.dumps({'model': extra}, ensure_ascii=False).encode('utf-8'); print('added', fn); continue
+            for n in targets:
+                d = json.loads(e[n].decode('utf-8')); m = d.get('model', {})
+                if m.get('type') != 'minecraft:range_dispatch' or m.get('property') != extra.get('property'):
+                    print('skip (not a cmd range_dispatch):', n); continue
+                have = {x['threshold'] for x in m['entries']}
+                added = [x for x in extra['entries'] if x['threshold'] not in have]
+                m['entries'] = sorted(m['entries'] + added, key=lambda x: x['threshold'])
+                e[n] = json.dumps(d, ensure_ascii=False).encode('utf-8'); print('merged', len(added), 'entries into', n)
     with zipfile.ZipFile(dst, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         for n in sorted(e): z.writestr(n, e[n])
     print('written', dst, os.path.getsize(dst), 'bytes; overlays:', [o['directory'] for o in ov])

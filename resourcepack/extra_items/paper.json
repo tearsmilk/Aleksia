@@ -1,0 +1,180 @@
+{
+ "model": {
+  "type": "minecraft:range_dispatch",
+  "property": "minecraft:custom_model_data",
+  "entries": [
+   {
+    "threshold": 551001,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/1"
+    }
+   },
+   {
+    "threshold": 551002,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/2"
+    }
+   },
+   {
+    "threshold": 551003,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/3"
+    }
+   },
+   {
+    "threshold": 551004,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/4"
+    }
+   },
+   {
+    "threshold": 551005,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/5"
+    }
+   },
+   {
+    "threshold": 551006,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/6"
+    }
+   },
+   {
+    "threshold": 551007,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/7"
+    }
+   },
+   {
+    "threshold": 551008,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/8"
+    }
+   },
+   {
+    "threshold": 551009,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/9"
+    }
+   },
+   {
+    "threshold": 551010,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/10"
+    }
+   },
+   {
+    "threshold": 551011,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/11"
+    }
+   },
+   {
+    "threshold": 551012,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/12"
+    }
+   },
+   {
+    "threshold": 551013,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/13"
+    }
+   },
+   {
+    "threshold": 551014,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/14"
+    }
+   },
+   {
+    "threshold": 551015,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/15"
+    }
+   },
+   {
+    "threshold": 551016,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/16"
+    }
+   },
+   {
+    "threshold": 551017,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/17"
+    }
+   },
+   {
+    "threshold": 551018,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/18"
+    }
+   },
+   {
+    "threshold": 551019,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/19"
+    }
+   },
+   {
+    "threshold": 551020,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/20"
+    }
+   },
+   {
+    "threshold": 551021,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/21"
+    }
+   },
+   {
+    "threshold": 551022,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/22"
+    }
+   },
+   {
+    "threshold": 551023,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/23"
+    }
+   },
+   {
+    "threshold": 551024,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/24"
+    }
+   }
+  ],
+  "fallback": {
+   "type": "minecraft:model",
+   "model": "item/paper"
+  }
+ }
+}
