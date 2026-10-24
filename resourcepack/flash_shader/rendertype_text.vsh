@@ -3,7 +3,7 @@
 #define MAX_BIT 10
 #define ADD_OFFSET 4095
 #define DEFAULT_OFFSET 10
-#define SHADER_VERSION 2
+#define SHADER_VERSION 3
 #moj_import <fog.glsl>
 #if SHADER_VERSION >= 3
 #moj_import <dynamictransforms.glsl>
@@ -34,7 +34,7 @@ if (flashColor == ivec3(254, 254, 253)) {
 #endif
     return;
 }
-if (pos.y >= ui.y && ProjMat[3].x == -1) {int bit = int(pos.y) >> HEIGHT_BIT;if (((bit >> MAX_BIT) & 1) == 1) {int id = bit - (1 << MAX_BIT);pos.x -= 0.5 * ui.x;pos.y -= (bit << HEIGHT_BIT) + ADD_OFFSET + DEFAULT_OFFSET;float xGui = 0;float yGui = 0;float layer = 0;float opacity = 1;bool outline = false;int property = 0;switch (id) {case 1:layer = 2;outline = true;break;case 2:layer = 2;break;case 3:xGui = ui.x * 50.0 / 100.0;break;case 4:xGui = ui.x * 50.0 / 100.0;layer = 2;outline = true;break;case 5:opacity = 0.0;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 6:opacity = 0.21987532;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 7:opacity = 0.21987532;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 8:opacity = 0.43953365;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 9:opacity = 0.43953365;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 10:opacity = 0.65875816;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 11:opacity = 0.65875816;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 12:opacity = 0.8773326;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 13:opacity = 0.8773326;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 14:xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 15:xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 100.0 / 100.0;outline = true;break;case 16:xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 100.0 / 100.0;break;case 17:xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 100.0 / 100.0;layer = 10;break;}
+if (pos.y >= ui.y && ProjMat[3].x == -1) {int bit = int(pos.y) >> HEIGHT_BIT;if (((bit >> MAX_BIT) & 1) == 1) {int id = bit - (1 << MAX_BIT);pos.x -= 0.5 * ui.x;pos.y -= (bit << HEIGHT_BIT) + ADD_OFFSET + DEFAULT_OFFSET;float xGui = 0;float yGui = 0;float layer = 0;float opacity = 1;bool outline = false;int property = 0;switch (id) {case 1:break;case 2:layer = 2;outline = true;break;case 3:layer = 2;break;case 4:xGui = ui.x * 35.0 / 100.0;yGui = ui.y * 100.0 / 100.0;break;case 5:xGui = ui.x * 50.0 / 100.0;break;case 6:xGui = ui.x * 50.0 / 100.0;layer = 2;outline = true;break;case 7:xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 100.0 / 100.0;outline = true;break;case 8:xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 100.0 / 100.0;break;case 9:xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 100.0 / 100.0;layer = 10;break;case 10:xGui = ui.x * 65.0 / 100.0;yGui = ui.y * 100.0 / 100.0;break;}
 #if SHADER_VERSION < 2
 vertexColor = (checkElement(pos.z) && !outline) ? vec4(0) : Color * texelFetch(Sampler2, UV2 / 16, 0) * vec4(1, 1, 1, opacity);
 #else

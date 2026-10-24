@@ -3,7 +3,7 @@
 #define MAX_BIT 10
 #define ADD_OFFSET 4095
 #define DEFAULT_OFFSET 10
-#define SHADER_VERSION 2
+#define SHADER_VERSION 3
 #moj_import <fog.glsl>
 #if SHADER_VERSION >= 3
 #moj_import <dynamictransforms.glsl>
