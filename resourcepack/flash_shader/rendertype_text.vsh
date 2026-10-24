@@ -1,350 +1,49 @@
 #version 150
-
-#moj_import <minecraft:fog.glsl>
-#moj_import <minecraft:dynamictransforms.glsl>
-#moj_import <minecraft:projection.glsl>
-#moj_import <minecraft:globals.glsl> 
-
-precision highp float;
-
-
-
-
-
-
-#define hue(v)  ((.6+.6*cos(6.*(v)+vec4(0, 23, 21, 1)))+vec4(0., 0., 0., 1.) )
-
-#define finalize() { vertexDistance=length((ModelViewMat*vertex).xyz); texCoord0=UV0; }
-
-in vec3 Position;
-in vec4 Color;
-in vec2 UV0;
-in ivec2 UV2;
-
-
-uniform sampler2D Sampler0;
-
-uniform sampler2D Sampler2;
-
-out float vertexDistance;
-out vec4 vertexColor;
-out vec2 texCoord0;
-
-out float sphericalVertexDistance;
-out float cylindricalVertexDistance;
-
-float safeGameTime() {
-    float gameTime=GameTime;
-    
-    if(gameTime <= 0) {
-        gameTime=.5;
-    }
-    return gameTime;
-}
-
-float scaledTime() {
-    return safeGameTime()*12000.;
-}
-
-void f_0(inout vec4 vertex) {
-    gl_Position=ProjMat*ModelViewMat*vertex;
-}
-
-void f_1() {
-    vertexColor=Color*texelFetch(Sampler2, UV2 / 16, 0);
-}
-
-
-void f_2(inout vec4 vertex) {
-    f_0(vertex);
-    if(Position.z==0. && gl_Position.x > .95) {
-        vertexColor=vec4(0);
-    }else{
-        f_1();
-    }
-    finalize();
-}
-
-
-
-void f_3() {
-    vertexColor=hue(gl_Position.x+safeGameTime()*1000.)*texelFetch(Sampler2, UV2 / 16, 0);
-}
-
-void f_4() {
-    gl_Position.y+=sin(scaledTime()+(gl_Position.x*6)) / 150.;
-}
-
-void f_5(inout vec4 vertex) {
-    f_0(vertex);
-    f_3();
-    finalize();
-}
-
-void f_6(inout vec4 vertex) {
-    f_0(vertex);
-    f_1();
-    f_4();
-    finalize();
-}
-
-void f_7(inout vec4 vertex) {
-    f_0(vertex);
-    f_4();
-    f_3();
-    finalize();
-}
-
-void f_8(inout vec4 vertex) {
-    f_1();
-    float vertexId=mod(gl_VertexID, 4.);
-    if(vertex.z <= 0.) {
-        if(vertexId==3. || vertexId==0.) {
-            vertex.y+=cos(scaledTime() / 4)*.1;
-            vertex.y+=max(cos(scaledTime() / 4)*.1, 0.);
-        }
-    }else{
-        if(vertexId==3. || vertexId==0.) {
-            vertex.y-=cos(scaledTime() / 4)*3;
-            vertex.y-=max(cos(scaledTime() / 4)*4, 0.);
-        }
-    }
-    f_0(vertex);
-    finalize();
-}
-
-void f_9(inout vec4 vertex) {
-    float vertexId=mod(gl_VertexID, 4.);
-    if(vertex.z <= 0.) {
-        if(vertexId==3. || vertexId==0.) {
-            vertex.y+=cos(scaledTime() / 4)*.1;
-            vertex.y+=max(cos(scaledTime() / 4)*.1, 0.);
-        }
-    }else{
-        if(vertexId==3. || vertexId==0.) {
-            vertex.y-=cos(scaledTime() / 4)*3;
-            vertex.y-=max(cos(scaledTime() / 4)*4, 0.);
-        }
-    }
-    f_3();
-    f_0(vertex);
-    finalize();
-}
-
-void f_a(inout vec4 vertex, float speed) {
-    f_0(vertex);
-    float blink=abs(sin(scaledTime()*speed));
-    vertexColor=Color*blink*texelFetch(Sampler2, UV2 / 16, 0);
-    finalize();
-}
-
-
-
-void f_b(inout vec4 vertex) {
-    f_0(vertex);
-    f_1();
-    vertexColor=vec4(1, 1, 1, vertexColor.a); 
-    finalize();
-}
-
-
-// creepers:flash — вершины с цветом #FEFEFD растягиваются на весь экран (белая вспышка).
-// sphericalVertexDistance = -1 сообщает фрагментному шейдеру игнорировать текстуру глифа.
-void f_flash(inout vec4 vertex) {
-    f_0(vertex);
-    float vid = mod(gl_VertexID, 4.);
-    vec2 c = vec2(-1., 1.);
-    if (vid == 1.) c = vec2(-1., -1.);
-    else if (vid == 2.) c = vec2(1., -1.);
-    else if (vid == 3.) c = vec2(1., 1.);
-    gl_Position = vec4(c * gl_Position.w, gl_Position.z, gl_Position.w);
-    vertexColor = vec4(1., 1., 1., Color.a);
-    sphericalVertexDistance = -1.;
-    cylindricalVertexDistance = -1.;
+#define HEIGHT_BIT 13
+#define MAX_BIT 10
+#define ADD_OFFSET 4095
+#define DEFAULT_OFFSET 10
+#define SHADER_VERSION 2
+#moj_import <fog.glsl>
+#if SHADER_VERSION >= 3
+#moj_import <dynamictransforms.glsl>
+#moj_import <projection.glsl>
+#moj_import <globals.glsl>
+out float sphericalVertexDistance;out float cylindricalVertexDistance;
+#else
+uniform mat4 ProjMat;uniform mat4 ModelViewMat;uniform int FogShape;out float vertexDistance;uniform vec2 ScreenSize;uniform float GameTime;
+#endif
+in vec3 Position;in vec4 Color;in vec2 UV0;in ivec2 UV2;uniform sampler2D Sampler0;uniform sampler2D Sampler2;uniform vec3 ChunkOffset;out vec4 vertexColor;out vec2 texCoord0;out float applyColor;bool range(float t, float m1, float m2) {return t >= m1 && t <= m2;}bool range(vec2 t, vec2 m1, vec2 m2) {return range(t.x, m1.x, m2.x) && range(t.y, m1.y, m2.y);}bool range(vec3 t, vec3 m1, vec3 m2) {return range(t.x, m1.x, m2.x) && range(t.y, m1.y, m2.y) && range(t.z, m1.z, m2.z);}bool checkElement(float z) {if (z == 0) return true; else if (z == 1000) return true; else if (z == -90) return true; else if (z == 2800) return true; return false;}float fogDistance(vec3 pos, int shape) {if (shape == 0) {return length(pos);} else {float distXZ = length(pos.xz);float distY = abs(pos.y);return max(distXZ, distY);}}void main() {vec3 pos = Position;vec2 ui = ceil(2 / vec2(ProjMat[0][0], -ProjMat[1][1]));vec2 uiScreen = ui / ScreenSize;vec3 color = Color.xyz;applyColor = 0;vertexColor = Color * texelFetch(Sampler2, UV2 / 16, 0);
+/* creepers:flash — title с цветом #FEFEFD растягивается на весь экран (белая вспышка).
+   Отрицательная дистанция тумана сообщает фрагментному шейдеру не трогать текстуру глифа. */
+ivec3 flashColor = ivec3(Color.xyz * 255.0 + vec3(0.5));
+if (flashColor == ivec3(254, 254, 253)) {
+    vec4 fp = ProjMat * ModelViewMat * vec4(Position, 1.0);
+    float fvid = mod(gl_VertexID, 4.0);
+    vec2 fc = vec2(-1.0, 1.0);
+    if (fvid == 1.0) fc = vec2(-1.0, -1.0);
+    else if (fvid == 2.0) fc = vec2(1.0, -1.0);
+    else if (fvid == 3.0) fc = vec2(1.0, 1.0);
+    gl_Position = vec4(fc * fp.w, fp.z, fp.w);
+    vertexColor = vec4(1.0, 1.0, 1.0, Color.a);
     texCoord0 = UV0;
-    vertexDistance = 0.;
+#if SHADER_VERSION >= 3
+    sphericalVertexDistance = -1.0; cylindricalVertexDistance = -1.0;
+#else
+    vertexDistance = -1.0;
+#endif
+    return;
 }
-
-void main() {
-
-    sphericalVertexDistance=fog_spherical_distance(Position);
-    cylindricalVertexDistance=fog_cylindrical_distance(Position);
-    vertexColor=Color*texelFetch(Sampler2, UV2 / 16, 0);
-
-    vec4 vertex=vec4(Position, 1.);
-    ivec3 iColor=ivec3(Color.xyz*255+vec3(.5));
-
-    if(iColor==ivec3(254, 254, 253))
-    {
-        f_flash(vertex);
-        return;
-    }
-
-    
-    
-    if(iColor==ivec3(255, 85, 85))
-    {
-        f_2(vertex);
-        return;
-    }
-    
-
-    
-    if(fract(Position.z) < .1) {
-        
-        
-        if(iColor==ivec3(19, 23, 9))
-        {
-            gl_Position=vec4(2, 2, 2, 1);
-            f_1();
-            finalize();
-            return;
-        }
-        
-
-        
-        
-        if(iColor==ivec3(57, 63, 63)) {
-            
-            
-            f_0(vertex);
-            f_1();
-            finalize();
-            return;
-        }
-
-        
-        if(iColor==ivec3(57, 63, 62)) {
-            f_6(vertex);
-            return;
-        }
-
-        
-        if(iColor==ivec3(57, 62, 63)) {
-            
-            f_6(vertex);
-            return;
-        }
-
-        
-        if(iColor==ivec3(57, 62, 62)) {
-            f_8(vertex);
-            return;
-        }
-
-        
-        if(iColor==ivec3(57, 61, 63)) {
-            f_8(vertex);
-            return;
-        }
-
-        
-        if(iColor==ivec3(57, 61, 62)) {
-            f_a(vertex, .5);
-            return;
-        }
-
-        
-
-        
-    }
-
-    
-    
-    if(iColor==ivec3(78, 92, 36))
-    {
-        f_b(vertex);
-        return;
-    }
-    
-
-    
-    
-    
-    if(iColor==ivec3(230, 255, 254))
-    {
-        f_5(vertex);
-        return;
-    }
-
-    
-    if(iColor==ivec3(230, 255, 250))
-    {
-        f_6(vertex);
-        return;
-    }
-
-    
-    if(iColor==ivec3(230, 251, 254))
-    {
-        f_7(vertex);
-        return;
-    }
-
-    
-    if(iColor==ivec3(230, 251, 250))
-    {
-        f_8(vertex);
-        return;
-    }
-
-    
-    if(iColor==ivec3(230, 247, 254))
-    {
-        f_9(vertex);
-        return;
-    }
-
-    
-    if(iColor==ivec3(230, 247, 250))
-    {
-        f_a(vertex, .5);
-        return;
-    }
-
-    
-    
-
-    
-    
-    
-    if(iColor==ivec3(255, 255, 254))
-    {
-        f_5(vertex);
-        return;
-    }
-
-    
-    if(iColor==ivec3(255, 255, 253))
-    {
-        f_6(vertex);
-        return;
-    }
-
-    
-    if(iColor==ivec3(255, 255, 25))
-    {
-        f_7(vertex);
-        return;
-    }
-
-    
-    if(iColor==ivec3(255, 255, 251))
-    {
-        f_8(vertex);
-        return;
-    }
-
-    
-    if(iColor==ivec3(255, 254, 254))
-    {
-        f_9(vertex);
-        return;
-    }
-    
-
-    
-    f_0(vertex);
-    f_1();
-    finalize();
-}
+if (pos.y >= ui.y && ProjMat[3].x == -1) {int bit = int(pos.y) >> HEIGHT_BIT;if (((bit >> MAX_BIT) & 1) == 1) {int id = bit - (1 << MAX_BIT);pos.x -= 0.5 * ui.x;pos.y -= (bit << HEIGHT_BIT) + ADD_OFFSET + DEFAULT_OFFSET;float xGui = 0;float yGui = 0;float layer = 0;float opacity = 1;bool outline = false;int property = 0;switch (id) {case 1:layer = 2;outline = true;break;case 2:layer = 2;break;case 3:xGui = ui.x * 50.0 / 100.0;break;case 4:xGui = ui.x * 50.0 / 100.0;layer = 2;outline = true;break;case 5:opacity = 0.0;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 6:opacity = 0.21987532;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 7:opacity = 0.21987532;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 8:opacity = 0.43953365;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 9:opacity = 0.43953365;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 10:opacity = 0.65875816;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 11:opacity = 0.65875816;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 12:opacity = 0.8773326;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 13:opacity = 0.8773326;xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 14:xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 50.0 / 100.0;break;case 15:xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 100.0 / 100.0;outline = true;break;case 16:xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 100.0 / 100.0;break;case 17:xGui = ui.x * 50.0 / 100.0;yGui = ui.y * 100.0 / 100.0;layer = 10;break;}
+#if SHADER_VERSION < 2
+vertexColor = (checkElement(pos.z) && !outline) ? vec4(0) : Color * texelFetch(Sampler2, UV2 / 16, 0) * vec4(1, 1, 1, opacity);
+#else
+vertexColor = Color * texelFetch(Sampler2, UV2 / 16, 0) * vec4(1, 1, 1, opacity);
+#endif
+if ((property & 1) > 0) {pos.y += 4 * sin((GameTime * 1200 + pos.x / ui.x) * 3.1415 * 2);}if ((property & 2) > 0) {int hash = int(pos.x) * int(pos.y);float time = GameTime * 1200;hash = 31 * (hash + int(vertexColor.x + time));float r = float(hash % 224 + 32) / 255;hash = 31 * (hash + int(vertexColor.y + time));float g = float(hash % 224 + 32) / 255;hash = 31 * (hash + int(vertexColor.z + time));float b = float(hash % 224 + 32) / 255;float maxValue = max(max(r, g), b);vertexColor = vec4(pow(r / maxValue, 3), pow(g / maxValue, 3), pow(b / maxValue, 3), vertexColor.w);}if ((property & 4) > 0) {int hash = int(pos.x) * int(pos.y);float time = GameTime * 1200;hash = 31 * (hash + int(vertexColor.x + time));float r = vertexColor.x + float(hash % 64) / 255;hash = 31 * (hash + int(vertexColor.y + time));float g = vertexColor.y + float(hash % 64) / 255;hash = 31 * (hash + int(vertexColor.z + time));float b = vertexColor.z + float(hash % 64) / 255;vertexColor = vec4(r, g, b, vertexColor.w);}pos.x += xGui;pos.y += yGui;pos.z += layer;}} else {vec3 exp = vec3(128.0, 255.0, 32.0);if (ProjMat[3].x == -1 && range(pos.y, ui.y - 60, ui.y - 20) && range(pos.x, ui.x / 2 - 60, ui.x / 2 + 60) && (range(color, exp / 256, exp / 254) || color == vec3(0))) {vertexColor = vec4(0);}}
+#if SHADER_VERSION >= 3
+sphericalVertexDistance = fog_spherical_distance(pos);cylindricalVertexDistance = fog_cylindrical_distance(pos);
+#else
+vertexDistance = fogDistance(pos, FogShape);
+#endif
+texCoord0 = UV0;gl_Position = ProjMat * ModelViewMat * vec4(pos, 1.0);}
