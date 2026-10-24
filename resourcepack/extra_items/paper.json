@@ -170,6 +170,62 @@
      "type": "minecraft:model",
      "model": "lostassets/24"
     }
+   },
+   {
+    "threshold": 551082,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/82"
+    }
+   },
+   {
+    "threshold": 551083,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/83"
+    }
+   },
+   {
+    "threshold": 551086,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/86"
+    }
+   },
+   {
+    "threshold": 551087,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/87"
+    }
+   },
+   {
+    "threshold": 551088,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/88"
+    }
+   },
+   {
+    "threshold": 551089,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/89"
+    }
+   },
+   {
+    "threshold": 551090,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/90"
+    }
+   },
+   {
+    "threshold": 551091,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/91"
+    }
    }
   ],
   "fallback": {

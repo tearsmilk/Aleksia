@@ -4,6 +4,13 @@
   "property": "minecraft:custom_model_data",
   "entries": [
    {
+    "threshold": 551004,
+    "model": {
+     "type": "minecraft:model",
+     "model": "lostassets/weapon4"
+    }
+   },
+   {
     "threshold": 551901,
     "model": {
      "type": "minecraft:model",
